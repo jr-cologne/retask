@@ -8,6 +8,9 @@ use Illuminate\Foundation\Support\Providers\AuthServiceProvider as ServiceProvid
 use App\Task;
 use App\Policies\TaskPolicy;
 
+use App\TaskList;
+use App\Policies\TaskListPolicy;
+
 class AuthServiceProvider extends ServiceProvider
 {
     /**
@@ -17,6 +20,7 @@ class AuthServiceProvider extends ServiceProvider
      */
     protected $policies = [
         Task::class => TaskPolicy::class,
+        TaskList::class => TaskListPolicy::class
     ];
 
     /**

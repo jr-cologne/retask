@@ -7,29 +7,43 @@
                 <div class="card-header">{{ __('Create a new Task') }}</div>
 
                 <div class="card-body">
-                    <form method="POST" action="{{ route('tasks.store') }}" aria-label="{{ __('Create Task') }}">
+                    <form method="POST" action="{{ route('task.store') }}" aria-label="{{ __('Create Task') }}">
                         @csrf
 
-                        <div class="form-group row">
-                            <label for="task" class="col-sm-4 col-form-label text-md-right">{{ __('Task') }}</label>
+                        <div class="form-group">
+                            <label for="task">{{ __('Task') }}</label>
+                            <input id="task" type="text" class="form-control{{ $errors->has('task') ? ' is-invalid' : '' }}" name="task" value="{{ old('task') }}" required autofocus>
 
-                            <div class="col-md-6">
-                                <input id="task" type="text" class="form-control{{ $errors->has('task') ? ' is-invalid' : '' }}" name="task" value="{{ old('task') }}" required autofocus>
-
-                                @if ($errors->has('task'))
-                                    <span class="invalid-feedback" role="alert">
-                                        <strong>{{ $errors->first('task') }}</strong>
-                                    </span>
-                                @endif
-                            </div>
+                            @if ($errors->has('task'))
+                                <span class="invalid-feedback" role="alert">
+                                    <strong>{{ $errors->first('task') }}</strong>
+                                </span>
+                            @endif
                         </div>
 
-                        <div class="form-group row mb-0">
-                            <div class="col-md-8 offset-md-4">
-                                <button type="submit" class="btn btn-primary">
-                                    {{ __('Create Task') }}
-                                </button>
-                            </div>
+                        <div class="form-group">
+                            <label for="list">{{ __('List') }}</label>
+                            <select id="list" class="form-control{{ $errors->has('list') ? ' is-invalid' : '' }}" name="list">
+                                <option value="0">No list</option>
+
+                                @if ($lists->count())
+                                    @foreach ($lists as $list)
+                                        <option value="{{ $list->id }}">{{ $list->name }}</option>
+                                    @endforeach
+                                @endif
+                            </select>
+
+                            @if ($errors->has('list'))
+                                <span class="invalid-feedback" role="alert">
+                                    <strong>{{ $errors->first('list') }}</strong>
+                                </span>
+                            @endif
+                        </div>
+
+                        <div class="form-group">
+                            <button type="submit" class="btn btn-primary">
+                                {{ __('Create Task') }}
+                            </button>
                         </div>
                     </form>
                 </div>
@@ -47,6 +61,7 @@
                         <table class="table table-striped">
                             <thead>
                                 <th>Task</th>
+                                <th>List</th>
                                 <th></th>
                             </thead>
                             <tbody>
@@ -56,7 +71,14 @@
                                             {{ $task->task }}
                                         </td>
                                         <td>
-                                            <form method="POST" action="{{ route('tasks.destroy', $task->id) }}" aria-label="{{ __('Delete Task') }}">
+                                            @if (isset($task->list))
+                                                <a href="{{ route('list.show', $task->list->id) }}">{{ $task->list->name }}</a>
+                                            @else
+                                                No list
+                                            @endif
+                                        </td>
+                                        <td>
+                                            <form method="POST" action="{{ route('task.destroy', $task->id) }}" aria-label="{{ __('Delete Task') }}">
                                                 @csrf
 
                                                 <button type="submit" class="btn btn-danger">Delete</button>

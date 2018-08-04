@@ -15,10 +15,18 @@ Route::get('/', function () {
     return view('welcome');
 })->name('welcome');
 
-Route::get('/tasks', 'TaskController@index')->name('tasks.index');
+Route::get('/tasks', 'TaskController@index')->name('task.index');
 
-Route::post('/task', 'TaskController@store')->name('tasks.store');
+Route::post('/task', 'TaskController@store')->name('task.store');
 
-Route::delete('/task/{task}', 'TaskController@destroy')->name('tasks.destroy');
+Route::delete('/task/{task}', 'TaskController@destroy')->name('task.destroy');
+
+Route::get('/lists', 'ListController@index')->name('list.index');
+
+Route::get('/list/{list}', 'ListController@show')->name('list.show');
+
+Route::post('/list', 'ListController@store')->name('list.store');
+
+Route::delete('/list/{list}', 'ListController@destroy')->name('list.destroy');
 
 Auth::routes();
