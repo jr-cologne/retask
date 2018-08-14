@@ -23,19 +23,18 @@ class ListController extends Controller
 
     public function index(Request $request)
     {
-        return view('lists', [
-            'lists' => $this->lists->forUser($request->user())
-        ]);
+        $lists = $this->lists->forUser($request->user());
+
+        return view('lists', compact([ 'lists' ]));
     }
 
     public function show(TaskList $list)
     {
         $this->authorize('show', $list);
 
-        return view('list', [
-            'list' => $list,
-            'tasks' => $this->tasks->forList($list)
-        ]);
+        $tasks = $this->tasks->forList($list);
+
+        return view('list', compact([ 'list', 'tasks' ]));
     }
 
     public function store(Request $request)
@@ -44,9 +43,7 @@ class ListController extends Controller
             'name' => 'required|max:255'
         ]);
 
-        $request->user()->lists()->create([
-            'name' => $request->get('name')
-        ]);
+        $request->user()->lists()->create($request->only([ 'name' ]));
 
         return redirect()->route('list.index');
     }
@@ -55,7 +52,7 @@ class ListController extends Controller
     {
         $this->authorize('destroy', $list);
 
-        if ((bool) $request->get('delete_tasks')) {
+        if ((bool) $request->delete_tasks) {
             $list->tasks()->delete();
         } else {
             $list->tasks()->update([ 'task_list_id' => null ]);

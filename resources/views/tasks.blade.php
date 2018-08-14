@@ -22,6 +22,8 @@
                         </div>
 
                         <div class="form-group">
+                            <p>In order to create a new list, select no list and enter the name of the new list below.</p>
+
                             <label for="list">{{ __('List') }}</label>
                             <select id="list" class="form-control{{ $errors->has('list') ? ' is-invalid' : '' }}" name="list">
                                 <option value="0">No list</option>
@@ -36,6 +38,17 @@
                             @if ($errors->has('list'))
                                 <span class="invalid-feedback" role="alert">
                                     <strong>{{ $errors->first('list') }}</strong>
+                                </span>
+                            @endif
+                        </div>
+
+                        <div class="form-group">
+                            <label for="new_list">{{ __('New List') }}</label>
+                            <input id="new_list" type="text" class="form-control{{ $errors->has('new_list') ? ' is-invalid' : '' }}" name="new_list" value="{{ old('new_list') }}">
+
+                            @if ($errors->has('new_list'))
+                                <span class="invalid-feedback" role="alert">
+                                    <strong>{{ $errors->first('new_list') }}</strong>
                                 </span>
                             @endif
                         </div>
