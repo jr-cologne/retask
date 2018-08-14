@@ -26,6 +26,11 @@ class TaskListPolicy
         return $user->id === $list->user_id;
     }
 
+    public function update(User $user, TaskList $list)
+    {
+        return $user->id === $list->user_id;
+    }
+
     public function destroy(User $user, TaskList $list)
     {
         return $user->id === $list->user_id;

@@ -4,10 +4,11 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 
-use App\Repositories\TaskRepository;
-use App\Repositories\TaskListRepository;
-use App\Task;
-use App\TaskList;
+use App\{
+    Repositories\TaskRepository,
+    Repositories\TaskListRepository,
+    Task
+};
 
 class TaskController extends Controller
 {
@@ -32,11 +33,7 @@ class TaskController extends Controller
 
     public function store(Request $request)
     {
-        $this->validate($request, [
-            'task' => 'required|max:255',
-            'list' => 'required|numeric',
-            'new_list' => 'nullable|max:255'
-        ]);
+        $this->validateStoreRequest($request);
 
         $list = (int) $request->list;
 
@@ -46,27 +43,15 @@ class TaskController extends Controller
 
         // assign task to existing list
         if ($list !== 0) {
-            $list = TaskList::find($list);
-
-            if ($list) {
-                $data = array_merge($data, [
-                    'task_list_id' => $list->id
-                ]);
-            }
+            $data = array_merge($data, $this->assignTaskToExistingList($list));
         }
 
-        // create new list and assign task to it
+        // store new list and assign task to it
         if ($list === 0 && $new_list) {
-            $new_list_id = $request->user()->lists()->create([
-                'name' => $new_list
-            ])->id;
-
-            $data = array_merge($data, [
-                'task_list_id' => $new_list_id
-            ]);
+            $data = array_merge($data, $this->storeNewListAndAssignTask($new_list));
         }
 
-        $request->user()->tasks()->create($data);
+        $this->tasks->storeForUser($data, $request->user());
 
         return redirect()->route('task.index');
     }
@@ -75,8 +60,45 @@ class TaskController extends Controller
     {
         $this->authorize('destroy', $task);
 
-        $task->delete();
+        $this->tasks->destroy($task);
 
         return back();
+    }
+
+    protected function validateStoreRequest(Request $request)
+    {
+        $this->validate($request, [
+            'task' => 'required|max:255',
+            'list' => 'required|numeric',
+            'new_list' => 'nullable|max:255'
+        ]);
+    }
+
+    protected function assignTaskToExistingList(int $list) : array
+    {
+        $list = $this->lists->byIdForUser($list, request()->user());
+
+        if (!$list) {
+            return [];
+        }
+
+        return [
+            'task_list_id' => $list->id
+        ];
+    }
+
+    protected function storeNewListAndAssignTask(string $new_list) : array
+    {
+        $new_list = $this->lists->storeForUser([
+            'name' => $new_list
+        ], request()->user());
+
+        if (!$new_list) {
+            return [];
+        }
+
+        return [
+            'task_list_id' => $new_list->id
+        ];
     }
 }
