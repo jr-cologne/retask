@@ -2,8 +2,11 @@
 
 namespace App\Repositories;
 
-use App\User;
-use App\TaskList;
+use App\{
+    User,
+    TaskList,
+    Task
+};
 
 class TaskRepository
 {
@@ -20,5 +23,25 @@ class TaskRepository
     public function forList(TaskList $list)
     {
         return $list->tasks()->latest()->get();
+    }
+
+    public function storeForUser(array $data, User $user)
+    {
+        $user->tasks()->create($data);
+    }
+
+    public function updateForList(TaskList $list)
+    {
+        $list->tasks()->update([ 'task_list_id' => null ]);
+    }
+
+    public function destroy(Task $task)
+    {
+        $task->delete();
+    }
+
+    public function destroyForList(TaskList $list)
+    {
+        $list->tasks()->delete();
     }
 }

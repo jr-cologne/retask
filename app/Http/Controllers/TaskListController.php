@@ -4,9 +4,11 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 
-use App\Repositories\TaskListRepository;
-use App\Repositories\TaskRepository;
-use App\TaskList;
+use App\{
+    Repositories\TaskListRepository,
+    Repositories\TaskRepository,
+    TaskList
+};
 
 class ListController extends Controller
 {
@@ -39,11 +41,9 @@ class ListController extends Controller
 
     public function store(Request $request)
     {
-        $this->validate($request, [
-            'name' => 'required|max:255'
-        ]);
+        $this->validateStoreRequest($request);
 
-        $request->user()->lists()->create($request->only([ 'name' ]));
+        $this->lists->storeForUser($request->only([ 'name' ]), $request->user());
 
         return redirect()->route('list.index');
     }
@@ -51,15 +51,23 @@ class ListController extends Controller
     public function destroy(TaskList $list, Request $request)
     {
         $this->authorize('destroy', $list);
+        $this->authorize('update', $list);
 
         if ((bool) $request->delete_tasks) {
-            $list->tasks()->delete();
+            $this->tasks->destroyForList($list);
         } else {
-            $list->tasks()->update([ 'task_list_id' => null ]);
+            $this->tasks->updateForList($list);
         }
 
-        $list->delete();
+        $this->lists->destroy($list);
 
         return redirect()->route('list.index');
+    }
+
+    protected function validateStoreRequest(Request $request)
+    {
+        $this->validate($request, [
+            'name' => 'required|max:255'
+        ]);
     }
 }
