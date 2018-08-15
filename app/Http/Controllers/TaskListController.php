@@ -67,7 +67,7 @@ class ListController extends Controller
     protected function validateStoreRequest(Request $request)
     {
         $this->validate($request, [
-            'name' => 'required|max:255'
+            'name' => 'required|string|max:255'
         ]);
     }
 }
