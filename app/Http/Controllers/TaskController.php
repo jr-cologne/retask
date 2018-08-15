@@ -68,9 +68,9 @@ class TaskController extends Controller
     protected function validateStoreRequest(Request $request)
     {
         $this->validate($request, [
-            'task' => 'required|max:255',
+            'task' => 'required|string|max:255',
             'list' => 'required|numeric',
-            'new_list' => 'nullable|max:255'
+            'new_list' => 'nullable|string|max:255'
         ]);
     }
 
