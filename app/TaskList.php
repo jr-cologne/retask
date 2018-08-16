@@ -4,8 +4,10 @@ namespace App;
 
 use Illuminate\Database\Eloquent\Model;
 
-use App\User;
-use App\Task;
+use App\{
+    User,
+    Task
+};
 
 class TaskList extends Model
 {

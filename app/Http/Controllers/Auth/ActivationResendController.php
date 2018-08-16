@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Auth;
 
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
+use Illuminate\Validation\Rule;
 
 use App\Repositories\UserRepository;
 use App\Events\Auth\UserRequestedActivationEmail;
@@ -37,9 +38,15 @@ class ActivationResendController extends Controller
     protected function validateResendRequest(Request $request)
     {
         $this->validate($request, [
-            'email' => 'required|email|exists:users,email'
+            'email' => [
+                'required',
+                'email',
+                Rule::exists('users')->where(function ($query) {
+                    $query->where('active', false);
+                })
+            ]
         ], [
-            'email.exists' => 'Account not found.'
+            'email.exists' => 'No inactivated account found.'
         ]);
     }
 }

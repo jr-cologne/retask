@@ -5,8 +5,10 @@ namespace App;
 use Illuminate\Notifications\Notifiable;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 
-use App\Task;
-use App\TaskList;
+use App\{
+    Task,
+    TaskList
+};
 
 class User extends Authenticatable
 {
