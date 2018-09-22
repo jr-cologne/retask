@@ -48,36 +48,4 @@ class LoginController extends Controller
     {
         return 'name';
     }
-
-    /**
-     * Validate the user login request.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @return void
-     */
-    protected function validateLogin(Request $request)
-    {
-        $this->validate($request, [
-            $this->username() => [
-                'required',
-                'string',
-                Rule::exists('users')->where(function ($query) {
-                    $query->where('active', true);
-                }),
-            ],
-            'password' => 'required|string',
-        ], $this->validationErrors());
-    }
-
-    /**
-     * Get the validation errors for login.
-     *
-     * @return array
-     */
-    protected function validationErrors() : array
-    {
-        return [
-            $this->username() . '.exists' => 'No account found. Make sure to activate your account before logging in.'
-        ];
-    }
 }

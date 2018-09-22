@@ -17,7 +17,7 @@ class ListController extends Controller
 
     public function __construct(TaskListRepository $lists, TaskRepository $tasks)
     {
-        $this->middleware('auth');
+        $this->middleware([ 'auth', 'verified' ]);
 
         $this->lists = $lists;
         $this->tasks = $tasks;

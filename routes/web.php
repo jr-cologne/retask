@@ -29,10 +29,4 @@ Route::post('/list', 'ListController@store')->name('list.store');
 
 Route::delete('/list/{list}', 'ListController@destroy')->name('list.destroy');
 
-Auth::routes();
-
-Route::get('/auth/activate', 'Auth\ActivationController@activate')->name('auth.activate');
-
-Route::get('/auth/activate/resend', 'Auth\ActivationResendController@showResendForm')->name('auth.activate.resend');
-
-Route::post('/auth/activate/resend', 'Auth\ActivationResendController@resend')->name('auth.activate.resend');
+Auth::routes([ 'verify' => true ]);
