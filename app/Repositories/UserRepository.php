@@ -23,4 +23,9 @@ class UserRepository
             'activation_token' => null
         ]);
     }
+
+    public function destroy(User $user)
+    {
+        $user->delete();
+    }
 }
