@@ -30,3 +30,13 @@ Route::post('/list', 'ListController@store')->name('list.store');
 Route::delete('/list/{list}', 'ListController@destroy')->name('list.destroy');
 
 Auth::routes([ 'verify' => true ]);
+
+Route::group([ 'prefix' => '/account', 'namespace' => 'Account' ], function () {
+    Route::get('/', 'AccountController@index')->name('account.index');
+
+    Route::get('/delete', 'AccountController@delete')->name('account.delete');
+
+    Route::delete('/destroy', 'AccountController@destroy')->name('account.destroy');
+
+    Route::get('/deleted', 'AccountController@deleted')->name('account.deleted');
+});
