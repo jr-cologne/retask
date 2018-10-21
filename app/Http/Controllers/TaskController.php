@@ -35,25 +35,31 @@ class TaskController extends Controller
     {
         $this->validateStoreRequest($request);
 
-        $list = (int) $request->list;
-
-        $new_list = $request->new_list;
-
-        $data = $request->only([ 'task' ]);
-
-        // assign task to existing list
-        if ($list !== 0) {
-            $data = array_merge($data, $this->assignTaskToExistingList($list));
-        }
-
-        // store new list and assign task to it
-        if ($list === 0 && $new_list) {
-            $data = array_merge($data, $this->storeNewListAndAssignTask($new_list));
-        }
+        $data = $this->makeTaskData($request);
 
         $this->tasks->storeForUser($data, $request->user());
 
         return redirect()->route('task.index');
+    }
+
+    public function edit(Task $task, Request $request)
+    {
+        $this->authorize('edit', $task);
+
+        $lists = $this->lists->forUser($request->user());
+
+        return view('task.edit', compact([ 'task', 'lists' ]));
+    }
+
+    public function update(Task $task, Request $request)
+    {
+        $this->validateUpdateRequest($request);
+
+        $data = $this->makeTaskData($request);
+
+        $this->tasks->updateByIdForUser($task->id, $data, $request->user());
+
+        return back();
     }
 
     public function destroy(Task $task)
@@ -67,11 +73,31 @@ class TaskController extends Controller
 
     protected function validateStoreRequest(Request $request)
     {
-        $this->validate($request, [
-            'task' => 'required|string|max:255',
-            'list' => 'required|numeric',
-            'new_list' => 'nullable|string|max:255'
-        ]);
+        $this->validate($request, $this->rules());
+    }
+
+    protected function makeTaskData(Request $request) : array
+    {
+        $list = (int) $request->list;
+
+        $new_list = $request->new_list;
+
+        $data = $request->only([ 'task' ]);
+
+        // assign task to existing list
+        if ($list !== 0) {
+            return array_merge($data, $this->assignTaskToExistingList($list));
+        }
+
+        // store new list and assign task to it
+        if ($list === 0 && $new_list) {
+            return array_merge($data, $this->storeNewListAndAssignTask($new_list));
+        }
+
+        // task without list
+        $data['task_list_id'] = null;
+
+        return $data;
     }
 
     protected function assignTaskToExistingList(int $list) : array
@@ -99,6 +125,20 @@ class TaskController extends Controller
 
         return [
             'task_list_id' => $new_list->id
+        ];
+    }
+
+    protected function validateUpdateRequest(Request $request)
+    {
+        $this->validateStoreRequest($request);
+    }
+
+    protected function rules() : array
+    {
+        return [
+            'task' => 'required|string|max:255',
+            'list' => 'required|numeric',
+            'new_list' => 'nullable|string|max:255'
         ];
     }
 }

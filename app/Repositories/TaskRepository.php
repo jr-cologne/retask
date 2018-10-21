@@ -30,6 +30,11 @@ class TaskRepository
         $user->tasks()->create($data);
     }
 
+    public function updateByIdForUser(int $id, array $data, User $user)
+    {
+        $user->tasks()->where('id', $id)->update($data);
+    }
+
     public function updateForList(TaskList $list)
     {
         $list->tasks()->update([ 'task_list_id' => null ]);
