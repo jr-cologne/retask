@@ -23,15 +23,20 @@ class TaskListPolicy
 
     public function show(User $user, TaskList $list)
     {
-        return $user->id === $list->user_id;
+        return $this->touch($user, $list);
     }
 
     public function update(User $user, TaskList $list)
     {
-        return $user->id === $list->user_id;
+        return $this->touch($user, $list);
     }
 
     public function destroy(User $user, TaskList $list)
+    {
+        return $this->touch($user, $list);
+    }
+
+    protected function touch(User $user, TaskList $list)
     {
         return $user->id === $list->user_id;
     }

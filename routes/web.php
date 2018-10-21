@@ -19,6 +19,10 @@ Route::get('/tasks', 'TaskController@index')->name('task.index');
 
 Route::post('/task', 'TaskController@store')->name('task.store');
 
+Route::get('/task/{task}/edit', 'TaskController@edit')->name('task.edit');
+
+Route::patch('/task/{task}', 'TaskController@update')->name('task.update');
+
 Route::delete('/task/{task}', 'TaskController@destroy')->name('task.destroy');
 
 Route::get('/lists', 'ListController@index')->name('list.index');
