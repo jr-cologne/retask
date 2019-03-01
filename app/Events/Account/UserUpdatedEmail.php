@@ -1,22 +1,29 @@
 <?php
 
-namespace App\Events\Auth;
+namespace App\Events\Account;
 
+use App\User;
 use Illuminate\Queue\SerializesModels;
 use Illuminate\Foundation\Events\Dispatchable;
 
-use App\User;
-
-class UserRequestedActivationEmail
+/**
+ * Class UserUpdatedEmail
+ *
+ * @package App\Events\Account
+ */
+class UserUpdatedEmail
 {
     use Dispatchable, SerializesModels;
 
+    /**
+     * @var User
+     */
     public $user;
 
     /**
      * Create a new event instance.
      *
-     * @return void
+     * @param User $user
      */
     public function __construct(User $user)
     {

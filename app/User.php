@@ -60,4 +60,10 @@ class User extends Authenticatable implements MustVerifyEmail
     {
         return $this->hasMany(TaskList::class);
     }
+
+    public function deactivateAccount()
+    {
+        $this->email_verified_at = null;
+        $this->save();
+    }
 }

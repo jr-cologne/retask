@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Account;
 
+use App\Events\Account\UserUpdatedEmail;
 use App\Http\Controllers\Controller;
 use App\Repositories\UserRepository;
 use App\User;
@@ -51,17 +52,26 @@ class EditAccountController extends Controller
     {
         $this->validateUpdateRequest($request);
 
-        if ($data = $this->getChangedData($request->only([
+        if (!$data = $this->getChangedData($request->only([
             'name',
             'email',
             'password',
         ]))) {
-            $this->users->update($data, $request->user());
-
-            return redirect()->route('account.index')->withSuccess('Your account details have successfully been updated!');
+            return redirect()->route('account.edit');
         }
 
-        return redirect()->route('account.edit');
+        $this->users->update($data, $request->user());
+
+        if ($this->emailWasUpdated($data)) {
+            event(new UserUpdatedEmail($request->user()));
+
+            return redirect()->route('verification.notice')->with([
+                'success' => 'Your account details have successfully been updated!',
+                'status' => 'Because you changed your email, we have temporarily deactivated your account. Please make sure to reactivate your account. For this reason, an email has been sent to your new email address.'
+            ]);
+        }
+
+        return redirect()->route('account.index')->withSuccess('Your account details have successfully been updated!');
     }
 
     /**
@@ -104,10 +114,23 @@ class EditAccountController extends Controller
         return $rules;
     }
 
+    /**
+     * @param array $data
+     * @return array
+     */
     protected function getChangedData(array $data) : array
     {
         return array_filter($data, function ($value) {
             return $value;
         });
+    }
+
+    /**
+     * @param array $data
+     * @return bool
+     */
+    protected function emailWasUpdated(array $data) : bool
+    {
+        return array_key_exists('email', $data);
     }
 }
