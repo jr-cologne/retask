@@ -3,12 +3,15 @@
 namespace App\Listeners\Auth;
 
 use App\Events\Auth\UserRequestedActivationEmail;
-use Illuminate\Queue\InteractsWithQueue;
-use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Support\Facades\Mail;
 
 use App\Mail\Auth\ActivationEmail;
 
+/**
+ * Class SendActivationEmail
+ *
+ * @package App\Listeners\Auth
+ */
 class SendActivationEmail
 {
     /**

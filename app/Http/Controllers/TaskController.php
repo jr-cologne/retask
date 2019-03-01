@@ -4,17 +4,33 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 
-use App\{
-    Repositories\TaskRepository,
-    Repositories\TaskListRepository,
-    Task
-};
+use App\Repositories\TaskRepository;
+use App\Repositories\TaskListRepository;
+use App\Task;
 
+/**
+ * Class TaskController
+ *
+ * @package App\Http\Controllers
+ */
 class TaskController extends Controller
 {
+    /**
+     * @var TaskRepository
+     */
     protected $tasks;
+
+    /**
+     * @var TaskListRepository
+     */
     protected $lists;
 
+    /**
+     * TaskController constructor.
+     *
+     * @param TaskRepository $tasks
+     * @param TaskListRepository $lists
+     */
     public function __construct(TaskRepository $tasks, TaskListRepository $lists)
     {
         $this->middleware([ 'auth', 'verified' ]);
@@ -23,6 +39,10 @@ class TaskController extends Controller
         $this->lists = $lists;
     }
 
+    /**
+     * @param Request $request
+     * @return \Illuminate\Contracts\View\Factory|\Illuminate\View\View
+     */
     public function index(Request $request)
     {
         $tasks = $this->tasks->forUserWithList($request->user());
@@ -31,6 +51,11 @@ class TaskController extends Controller
         return view('tasks', compact([ 'tasks', 'lists' ]));
     }
 
+    /**
+     * @param Request $request
+     * @return \Illuminate\Http\RedirectResponse
+     * @throws \Illuminate\Validation\ValidationException
+     */
     public function store(Request $request)
     {
         $this->validateStoreRequest($request);
@@ -42,6 +67,12 @@ class TaskController extends Controller
         return redirect()->route('task.index');
     }
 
+    /**
+     * @param Task $task
+     * @param Request $request
+     * @return \Illuminate\Contracts\View\Factory|\Illuminate\View\View
+     * @throws \Illuminate\Auth\Access\AuthorizationException
+     */
     public function edit(Task $task, Request $request)
     {
         $this->authorize('edit', $task);
@@ -51,6 +82,12 @@ class TaskController extends Controller
         return view('task.edit', compact([ 'task', 'lists' ]));
     }
 
+    /**
+     * @param Task $task
+     * @param Request $request
+     * @return \Illuminate\Http\RedirectResponse
+     * @throws \Illuminate\Validation\ValidationException
+     */
     public function update(Task $task, Request $request)
     {
         $this->validateUpdateRequest($request);
@@ -62,6 +99,12 @@ class TaskController extends Controller
         return back();
     }
 
+    /**
+     * @param Task $task
+     * @return \Illuminate\Http\RedirectResponse
+     * @throws \Illuminate\Auth\Access\AuthorizationException
+     * @throws \Exception
+     */
     public function destroy(Task $task)
     {
         $this->authorize('destroy', $task);
@@ -71,11 +114,19 @@ class TaskController extends Controller
         return back();
     }
 
+    /**
+     * @param Request $request
+     * @throws \Illuminate\Validation\ValidationException
+     */
     protected function validateStoreRequest(Request $request)
     {
         $this->validate($request, $this->rules());
     }
 
+    /**
+     * @param Request $request
+     * @return array
+     */
     protected function makeTaskData(Request $request) : array
     {
         $list = (int) $request->list;
@@ -100,6 +151,10 @@ class TaskController extends Controller
         return $data;
     }
 
+    /**
+     * @param int $list
+     * @return array
+     */
     protected function assignTaskToExistingList(int $list) : array
     {
         $list = $this->lists->byIdForUser($list, request()->user());
@@ -113,6 +168,10 @@ class TaskController extends Controller
         ];
     }
 
+    /**
+     * @param string $new_list
+     * @return array
+     */
     protected function storeNewListAndAssignTask(string $new_list) : array
     {
         $new_list = $this->lists->storeForUser([
@@ -128,11 +187,18 @@ class TaskController extends Controller
         ];
     }
 
+    /**
+     * @param Request $request
+     * @throws \Illuminate\Validation\ValidationException
+     */
     protected function validateUpdateRequest(Request $request)
     {
         $this->validateStoreRequest($request);
     }
 
+    /**
+     * @return array
+     */
     protected function rules() : array
     {
         return [

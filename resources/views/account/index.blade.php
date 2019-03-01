@@ -12,7 +12,7 @@
                 <div class="card-body">
                     <ul class="list-group list-group-flush">
                       <li class="list-group-item"><i class="fas fa-user"></i> <strong>Username:</strong> {{ $user->name }}</li>
-                      <li class="list-group-item"><i class="fas fa-at"></i> <strong>Email:</strong> {{ $user->email }}</li>
+                        <li class="list-group-item"><i class="fas fa-at"></i> <strong>Email:</strong> <a href="mailto:{{ $user->email }}">{{ $user->email }}</a></li>
                       <li class="list-group-item"><i class="fas fa-calendar"></i> <strong>Registration Date:</strong> {{ $user->created_at->format('F d, Y') }}</li>
                     </ul>
                 </div>
@@ -27,6 +27,7 @@
 
                 <div class="card-body">
                     <div class="btn-group" role="group" aria-label="Account Actions">
+                        <a class="btn btn-warning" href="{{ route('account.edit') }}" role="button"><i class="fas fa-edit"></i> Edit account details</a>
                         <a class="btn btn-danger" href="{{ route('account.delete') }}" role="button"><i class="fas fa-trash"></i> Delete account</a>
                     </div>
                 </div>

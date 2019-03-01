@@ -5,20 +5,27 @@ namespace App\Mail\Auth;
 use Illuminate\Bus\Queueable;
 use Illuminate\Mail\Mailable;
 use Illuminate\Queue\SerializesModels;
-use Illuminate\Contracts\Queue\ShouldQueue;
 
 use App\User;
 
+/**
+ * Class ActivationEmail
+ *
+ * @package App\Mail\Auth
+ */
 class ActivationEmail extends Mailable
 {
     use Queueable, SerializesModels;
 
+    /**
+     * @var User
+     */
     public $user;
 
     /**
-     * Create a new message instance.
+     * ActivationEmail constructor.
      *
-     * @return void
+     * @param User $user
      */
     public function __construct(User $user)
     {
@@ -26,9 +33,7 @@ class ActivationEmail extends Mailable
     }
 
     /**
-     * Build the message.
-     *
-     * @return $this
+     * @return ActivationEmail
      */
     public function build()
     {

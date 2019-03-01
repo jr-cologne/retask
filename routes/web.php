@@ -38,9 +38,11 @@ Auth::routes([ 'verify' => true ]);
 Route::group([ 'prefix' => '/account', 'namespace' => 'Account' ], function () {
     Route::get('/', 'AccountController@index')->name('account.index');
 
-    Route::get('/delete', 'AccountController@delete')->name('account.delete');
+    Route::get('/edit', 'EditAccountController@index')->name('account.edit');
 
-    Route::delete('/destroy', 'AccountController@destroy')->name('account.destroy');
+    Route::patch('/update', 'EditAccountController@update')->name('account.update');
 
-    Route::get('/deleted', 'AccountController@deleted')->name('account.deleted');
+    Route::get('/delete', 'DeleteAccountController@index')->name('account.delete');
+
+    Route::delete('/destroy', 'DeleteAccountController@destroy')->name('account.destroy');
 });
